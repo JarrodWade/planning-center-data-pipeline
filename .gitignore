@@ -1,0 +1,6 @@
+**/logs
+*.txt
+Sheets_API_JSON/client_secret.json
+*.csv
+dags/__pycache__
+*.DS_Store
