@@ -1,13 +1,19 @@
 from bs4 import BeautifulSoup
 import time
 
+import pyotp
+from selenium import webdriver
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
+
 from selenium.webdriver.chrome.service import Service
 
 from selenium import webdriver
 
 from selenium.common.exceptions import WebDriverException
 
-def get_html(user_id, password, url):
+def get_html(user_id, password, url, secret):
 
     remote_webdriver = 'remote_chromedriver'
 
@@ -34,6 +40,21 @@ def get_html(user_id, password, url):
 
     # this is just to ensure that the page is loaded
     time.sleep(12)
+
+    #wait for the 2FA feild to display
+    authField = WebDriverWait(driver, 12).until(EC.presence_of_element_located((By.ID, "code")))
+
+    # get the token from google authenticator
+    totp = pyotp.totp.TOTP(secret)
+    token = totp.now()
+    print (token)
+    # enter the token in the UI
+    authField.send_keys(token)
+    # click on the button to complete 2FA
+    driver.find_element(by="name", value="commit").click()
+
+    # this is just to ensure that the page is loaded
+    time.sleep(20)
 
     # now can grab page info that page has been loaded and dynamic info as well
     page = driver.page_source
@@ -76,6 +97,14 @@ def get_credentials():
         password = b.read()
 
         return user_id, password
+    
+
+def get_secret():
+     with open('/opt/airflow/Documents/google_auth_sec.txt', 'r') as a:
+        
+        secret = a.read()
+
+        return secret
 
 
 def validate(web_list_count, pco_name, pco_count):

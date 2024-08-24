@@ -61,7 +61,7 @@ def pco_taskflow():
         
         # WecScraper use webscraper to get {list name: count} - this will be used to validate our use of the API
         html = wsc.get_html(user_id=wsc.get_credentials()[0], password=wsc.get_credentials()[1],
-                            url='https://people.planningcenteronline.com/lists')
+                            url='https://people.planningcenteronline.com/lists', secret=wsc.get_secret())
         validation_set = wsc.scrape(html)
 
         logging.info("\n"
