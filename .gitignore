@@ -1,5 +1,5 @@
 **/logs
-*.txt
+Documents/*
 Sheets_API_JSON/client_secret.json
 *.csv
 dags/__pycache__
