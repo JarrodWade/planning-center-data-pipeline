@@ -50,40 +50,43 @@ This project is an Apache Airflow-based data pipeline for scraping, validating, 
 
 3. **Create CSV format file in CSVs folder called CSV_fmt.json**
 
- ```
-{
-	"Example_List_1":  "List_1",
-  "Example_List_2":  "List_2",
-  "Example_List_3":  "List_3",
-  ...
-}
- ```
+	Please update to match your Planning Center lists of interest and desired CSV file names. 
+	 ```
+	{
+	  "Example_List_1":  "List_1",
+	  "Example_List_2":  "List_2",
+	  "Example_List_3":  "List_3",
+	  ...
+	}
+	 ```
 
- This is used to name the CSV files (per list) that are created from the Planning Center data.
+	 This is used to name the CSV files (per list) that are created from the Planning Center data.
+	
+	 See below for how this functions in practice:
 
- ```Python
-    # Task to create CSV files from the people list in-memory
-    @task
-    def make_csv(people_list: dict):
-        field_names = ['name', 'primary_email', 'primary_phone_number', 'grade', 'age']
-
-        with open('/opt/airflow/CSVs/CSV_fmt.json', 'r') as json_file:
-            csv_fmt = json.load(json_file)
-
-        csv_data = {}
-
-        for key, value in people_list.items():
-            if key in csv_fmt:
-                csv_name = csv_fmt[key]
-                csv_buffer = io.StringIO()
-                writer = csv.DictWriter(csv_buffer, fieldnames=field_names, extrasaction='ignore')
-                writer.writeheader()
-                writer.writerows(value)
-                csv_data[csv_name] = csv_buffer.getvalue()
-                logging.info(f"Completed writing {csv_name} to in-memory CSV")
-
-        return csv_data
- ```
+	 ```Python
+	    # Task to create CSV files from the people list in-memory
+	    @task
+	    def make_csv(people_list: dict):
+	        field_names = ['name', 'primary_email', 'primary_phone_number', 'grade', 'age']
+	
+	        with open('/opt/airflow/CSVs/CSV_fmt.json', 'r') as json_file:
+	            csv_fmt = json.load(json_file)
+	
+	        csv_data = {}
+	
+	        for key, value in people_list.items():
+	            if key in csv_fmt:
+	                csv_name = csv_fmt[key]
+	                csv_buffer = io.StringIO()
+	                writer = csv.DictWriter(csv_buffer, fieldnames=field_names, extrasaction='ignore')
+	                writer.writeheader()
+	                writer.writerows(value)
+	                csv_data[csv_name] = csv_buffer.getvalue()
+	                logging.info(f"Completed writing {csv_name} to in-memory CSV")
+	
+	        return csv_data
+	 ```
 
 4. **Build and start the Docker containers:**
 
