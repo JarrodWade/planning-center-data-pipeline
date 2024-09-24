@@ -7,5 +7,6 @@ dags/__pycache__
 dags/classes/__pycache__
 *.DS_Store
 CSVs/*
-.env
+*.env
+CSVs/CSV_fmt.json
 

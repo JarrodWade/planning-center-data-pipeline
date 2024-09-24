@@ -67,6 +67,8 @@ def pco_taskflow():
 
         # Iterate through lists in Planning Center
         for pc_list in pco.iterate('/people/v2/lists'):
+            # For our purposes, we are focusing on the Youth Program
+            # Please adapt for your target Planning Center Lists
             if "Youth" in pc_list["data"]["attributes"]["name"]:
                 list_name = pc_list["data"]["attributes"]["name"]
                 list_id = pc_list["data"]["id"]

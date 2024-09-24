@@ -3,7 +3,7 @@
 This project is an Apache Airflow-based data pipeline for scraping, validating, and processing data from Planning Center. The pipeline includes tasks for web scraping, API data extraction, data validation, and uploading results to AWS S3 and Google Sheets.
 
 ## Project Structure
-
+```
 ├── dags
 │ ├── classes
 │ │ └── Person.py
@@ -17,7 +17,7 @@ This project is an Apache Airflow-based data pipeline for scraping, validating, 
 ├── Sheets_API_JSON
 │ └── client_secret.json
 └── docker-compose.yaml
-
+```
 ## Prerequisites
 
 - Docker
