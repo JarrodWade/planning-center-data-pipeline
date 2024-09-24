@@ -63,6 +63,11 @@ x-airflow-common:
     AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
     AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
     AIRFLOW__API__AUTH_BACKENDS: 'airflow.api.auth.backend.basic_auth,airflow.api.auth.backend.session'
+    PCO_USER_ID: ${PCO_USER_ID}
+    PCO_PASSWORD: ${PCO_PASSWORD}
+    GOOGLE_AUTH_SECRET: ${GOOGLE_AUTH_SECRET}
+    PCO_ID: ${PCO_ID}
+    PCO_SECRET: ${PCO_SECRET}
 
 
     # yamllint disable rule:line-length
@@ -73,6 +78,7 @@ x-airflow-common:
     # WARNING: Use _PIP_ADDITIONAL_REQUIREMENTS option ONLY for a quick checks
     # for other purpose (development, test and especially production usage) build/extend Airflow image.
     _PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:-}
+
   volumes:
     - ${AIRFLOW_PROJ_DIR:-.}/dags:/opt/airflow/dags
     - ${AIRFLOW_PROJ_DIR:-.}/logs:/opt/airflow/logs
@@ -81,8 +87,9 @@ x-airflow-common:
     - ${AIRFLOW_PROJ_DIR:-.}/CSVs:/opt/airflow/CSVs
     - ${AIRFLOW_PROJ_DIR:-.}/Documents:/opt/airflow/Documents
     - ${AIRFLOW_PROJ_DIR:-.}/Sheets_API_JSON:/opt/airflow/Sheets_API_JSON
-    # securely pass AWS credentials to docker image
-    - $HOME/.aws:/home/airflow/.aws:ro
+    # securely pass AWS credentials to docker image - must adapt Windows vs MacOS, etc. 
+      # for example, on Linux, ${HOME}/.aws:/home/airflow/.aws:ro
+    - //c/Users/Jarrod/.aws:/home/airflow/.aws:ro
   user: "${AIRFLOW_UID:-50000}:0"
   depends_on:
     &airflow-common-depends-on

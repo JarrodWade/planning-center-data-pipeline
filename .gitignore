@@ -1,6 +1,11 @@
 **/logs
 Documents/*
+Documents
 Sheets_API_JSON/client_secret.json
 *.csv
 dags/__pycache__
+dags/classes/__pycache__
 *.DS_Store
+CSVs/*
+.env
+
