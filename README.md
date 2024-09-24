@@ -48,13 +48,50 @@ This project is an Apache Airflow-based data pipeline for scraping, validating, 
    GOOGLE_AUTH_SECRET=your_google_auth_secret
    ```
 
-3. **Build and start the Docker containers:**
+3. **Create CSV format file in CSVs folder called CSV_fmt.json**
+
+ ```
+{
+	"Example_List_1":  "List_1",
+  "Example_List_2":  "List_2",
+  "Example_List_3":  "List_3",
+  ...
+}
+ ```
+
+ This is used to name the CSV files (per list) that are created from the Planning Center data.
+
+ ```Python
+    # Task to create CSV files from the people list in-memory
+    @task
+    def make_csv(people_list: dict):
+        field_names = ['name', 'primary_email', 'primary_phone_number', 'grade', 'age']
+
+        with open('/opt/airflow/CSVs/CSV_fmt.json', 'r') as json_file:
+            csv_fmt = json.load(json_file)
+
+        csv_data = {}
+
+        for key, value in people_list.items():
+            if key in csv_fmt:
+                csv_name = csv_fmt[key]
+                csv_buffer = io.StringIO()
+                writer = csv.DictWriter(csv_buffer, fieldnames=field_names, extrasaction='ignore')
+                writer.writeheader()
+                writer.writerows(value)
+                csv_data[csv_name] = csv_buffer.getvalue()
+                logging.info(f"Completed writing {csv_name} to in-memory CSV")
+
+        return csv_data
+ ```
+
+4. **Build and start the Docker containers:**
 
    ```bash
    docker-compose up --build
    ```
 
-4. **Access the Airflow web interface:**
+5. **Access the Airflow web interface:**
 
    Open your web browser and go to `http://localhost:8080`. Use the default credentials (`airflow`/`airflow`) to log in.
 
