@@ -69,6 +69,8 @@ def scrape(page):
         l_name = card.find("span", attrs={"class": None}).text
         l_count = int(card.find("div", attrs={"class": "count badge badge--subtle"}).text)
 
+        # We are only interested in Youth Program counts for our purposes. 
+        # Update to fit your List(s) and use-case.
         if "Youth" in l_name:
             list_counts[l_name] = l_count
 
@@ -84,6 +86,7 @@ def get_secret():
     return secret
 
 def validate(web_list_count, pco_name, pco_count):
+    # Validate the counts from Planning Center match the counts from the web scraper  
     for name, count in web_list_count.items():
         if name == pco_name:
             if web_list_count[name] == pco_count:
