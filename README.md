@@ -48,7 +48,7 @@ This project is an Apache Airflow-based data pipeline for scraping, validating, 
    GOOGLE_AUTH_SECRET=your_google_auth_secret
    ```
 
-3. **Create CSV format file in CSVs folder called CSV_fmt.json**
+3. **Create CSV format file in `CSVs` folder called `CSV_fmt.json`**
 
 	Please update to match your Planning Center lists of interest and desired CSV file names. 
 	 ```
