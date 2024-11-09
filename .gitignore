@@ -8,4 +8,7 @@ dags/classes/__pycache__
 *.DS_Store
 CSVs/*
 *.env
+.venv
+venv
+__pycache__
 
