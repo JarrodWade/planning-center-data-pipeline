@@ -49,10 +49,10 @@ x-airflow-common:
   # In order to add custom dependencies or upgrade provider packages you can use your extended image.
   # Comment the image line, place your Dockerfile in the directory where you placed the docker-compose.yaml
   # and uncomment the "build" line below, Then run `docker-compose build` to build the images.
-  image: ${AIRFLOW_IMAGE_NAME:-extending_airflow:latest}
-  # image: ${AIRFLOW_IMAGE_NAME:-apache/airflow:2.8.3}
+  # image: ${AIRFLOW_IMAGE_NAME:-extending_airflow:latest}
+  image: ${AIRFLOW_IMAGE_NAME:-apache/airflow:2.8.3}
 
-  # build: .
+  build: .
   environment:
     &airflow-common-env
     AIRFLOW__CORE__EXECUTOR: CeleryExecutor
@@ -68,6 +68,9 @@ x-airflow-common:
     GOOGLE_AUTH_SECRET: ${GOOGLE_AUTH_SECRET}
     PCO_ID: ${PCO_ID}
     PCO_SECRET: ${PCO_SECRET}
+    GOOGLE_SHEET_MASTER: ${GOOGLE_SHEET_MASTER}
+    GOOGLE_SHEET_REF_TAB: ${GOOGLE_SHEET_REF_TAB}
+    GOOGLE_SHEET_DEST_TAB: ${GOOGLE_SHEET_DEST_TAB}
 
 
     # yamllint disable rule:line-length
