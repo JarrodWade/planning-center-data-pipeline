@@ -1,6 +1,6 @@
 # Planning Center Data Pipeline
 
-This project is an Apache Airflow-based data pipeline for scraping, validating, and processing data from Planning Center. The pipeline includes tasks for web scraping, API data extraction, data validation, and uploading results to AWS S3 and Google Sheets.
+This project is an Apache Airflow-based data pipeline for scraping, validating, and processing data from Planning Center. The pipeline includes tasks for web scraping, API data extraction, data validation, and uploading results to AWS S3 and Google Sheets to support analysis.
 
 ## Project Structure
 ```
@@ -8,7 +8,12 @@ This project is an Apache Airflow-based data pipeline for scraping, validating, 
 │ ├── classes
 │ │ └── Person.py
 │ ├── planning_center_dag.py
-│ └── webscraper.py
+│ └── tasks
+│   └── webscraper.py
+│   └── csv_operations.py
+│   └── planning_center.py
+│   └── csv_operations.py
+│   └── google_sheets.py
 ├── config
 ├── logs
 ├── plugins
@@ -46,12 +51,15 @@ This project is an Apache Airflow-based data pipeline for scraping, validating, 
    PCO_ID=your_pco_id
    PCO_SECRET=your_pco_secret
    GOOGLE_AUTH_SECRET=your_google_auth_secret
+   GOOGLE_SHEET_MASTER=your_master_worksheet
+   GOOGLE_SHEET_REF_TAB=your_source_tab
+   GOOGLE_SHEET_DEST_TAB=your_destination_tab
    ```
 
 3. **Create CSV format file in `CSVs` folder called `CSV_fmt.json`**
 
 	Please update to match your Planning Center lists of interest and desired CSV file names. 
-	 ```
+	 ```JSON
 	{
 	  "Example_List_1":  "List_1",
 	  "Example_List_2":  "List_2",
@@ -88,13 +96,69 @@ This project is an Apache Airflow-based data pipeline for scraping, validating, 
 	        return csv_data
 	 ```
 
-4. **Build and start the Docker containers:**
+4. **Modify Google Sheets task as needed in `process_google_sheets()`**
+
+   Modify the following actions to fit your needs:
+   
+	```Python
+        # Refresh master sheet
+        spreadsheet = client.open(os.getenv('GOOGLE_SHEET_MASTER'))
+        body = {
+                "requests": [
+                    {
+                        "findReplace": {
+                            "find": "=",
+                            "includeFormulas": True, #ensures our formulas are updated
+                            "allSheets": True, #refresh all sheets
+                            "replacement": "=" #replace with = (again, refreshes functions)
+                        }
+                    }
+                ]
+            }
+        spreadsheet.batch_update(body)
+
+        logging.info("Sheet refresh completed for all sheets")
+
+        # Update master sheet
+        sourceSheetName = os.getenv('GOOGLE_SHEET_REF_TAB')
+        destinationSheetName = os.getenv('GOOGLE_SHEET_DEST_TAB')
+
+        sourceSheetId = spreadsheet.worksheet(sourceSheetName)._properties['sheetId']
+        destinationSheetId = spreadsheet.worksheet(destinationSheetName)._properties['sheetId']
+        
+        body = {
+            "requests": [
+                {
+                    "copyPaste": {
+                        "source": {
+                            "sheetId": sourceSheetId,
+                            "startRowIndex": 2, # Skip header row + description row
+                            "endRowIndex": 500, # 500 rows
+                            "startColumnIndex": 0, # column A
+                            "endColumnIndex": 5 # column E
+                        },
+                        "destination": {
+                            "sheetId": destinationSheetId,
+                            "startRowIndex": 1, # Skip header row
+                            "endRowIndex": 500,
+                            "startColumnIndex": 0, # column A
+                            "endColumnIndex": 5 # column E
+                        },
+                        "pasteType": "PASTE_VALUES"
+                    }
+                }
+            ]
+        }
+        spreadsheet.batch_update(body)
+	```
+
+6. **Build and start the Docker containers:**
 
    ```bash
    docker-compose up --build
    ```
 
-5. **Access the Airflow web interface:**
+7. **Access the Airflow web interface:**
 
    Open your web browser and go to `http://localhost:8080`. Use the default credentials (`airflow`/`airflow`) to log in.
 
@@ -107,12 +171,12 @@ The main DAG is defined in `dags/planning_center_dag.py` and includes the follow
 - **pull_data**: Pulls data from the Planning Center API.
 - **make_csv**: Creates CSV files from the data in-memory.
 - **upload_to_s3**: Uploads the CSV files to AWS S3.
-- **make_google_sheet**: Uploads the CSV files to Google Sheets.
+- **process_google_sheets**: Uploads the CSV files to Google Sheets, refreshes formulas, automates data copy.
 
 ## Custom Classes and Scripts
 
 - **Person Class**: Defined in `dags/classes/Person.py`, used to represent individuals in the data.
-- **Web Scraper**: Functions for scraping Planning Center are defined in `dags/webscraper.py`.
+- **Web Scraper**: Functions for scraping Planning Center are defined in `dags/tasks/webscraper.py`.
 
 ## Configuration
 
