@@ -11,4 +11,5 @@ CSVs/*
 .venv
 venv
 __pycache__
+airflow.cfg
 
