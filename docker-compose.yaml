@@ -92,7 +92,7 @@ x-airflow-common:
     - ${AIRFLOW_PROJ_DIR:-.}/Sheets_API_JSON:/opt/airflow/Sheets_API_JSON
     # securely pass AWS credentials to docker image - must adapt Windows vs MacOS, etc. 
     # for example, on Linux, 
-    - ${MANUAL_HOME}/.aws:/home/airflow/.aws:Z # to help with macine specific permissions
+    - ${MANUAL_HOME}/.aws:/home/airflow/.aws:Z # to help with machine specific permissions
     #for Windows, 
     # - //c/Users/Jarrod/.aws:/home/airflow/.aws:ro
     - ${AIRFLOW_PROJ_DIR:-.}/airflow.cfg:/opt/airflow/airflow.cfg   
