@@ -1,6 +1,8 @@
 # Use the official Apache Airflow image as the base image
 FROM apache/airflow:2.8.3
 
+USER airflow
+
 # Set the working directory
 WORKDIR /opt/airflow
 
@@ -9,6 +11,4 @@ COPY requirements.txt .
 
 # Install the Python packages listed in requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
-
-
 
