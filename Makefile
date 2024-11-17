@@ -2,7 +2,7 @@
 # Setup containers to run Airflow
 
 docker-spin-up:
-	docker compose --env-file env up airflow-init && docker compose --env-file env up --build -d
+	docker compose --env-file .env up airflow-init && docker compose --env-file .env up --build -d
 
 perms:
 	mkdir -p logs plugins temp dags tests && chmod -R u=rwx,g=rwx,o=rwx logs plugins temp dags tests 
